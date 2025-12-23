@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://uni-vibe-backend-eight.vercel.app/api", // backend deployed URL
+  //baseURL: "https://uni-vibe-backend-eight.vercel.app/api", // backend deployed URL
+  baseURL: "http://localhost:5000/api",
   withCredentials: true, // only if backend uses cookies
 });
 
