@@ -16,6 +16,13 @@ export default function HomePage() {
   useEffect(() => {
     fetchEvents();
     checkAuthStatus();
+
+    // Auto-refresh events every 30 seconds to catch newly approved events
+    const interval = setInterval(() => {
+      fetchEvents();
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const checkAuthStatus = () => {

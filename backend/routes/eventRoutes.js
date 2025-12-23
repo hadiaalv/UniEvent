@@ -1,5 +1,6 @@
 const express = require("express");
 const Event = require("../models/Event");
+const User = require("../models/User");
 const Notification = require("../models/Notification");
 const auth = require("../middleware/authMiddleware");
 const role = require("../middleware/roleMiddleware");
@@ -103,13 +104,31 @@ router.put("/:id/approve", auth, role("SUPER_ADMIN"), async (req, res) => {
       return res.status(404).json({ msg: "Event not found" });
     }
 
-    // Create notification for the event creator
+    // 1. Notify the event creator
     await Notification.create({
       user: event.createdBy,
       message: `✅ Your event "${event.title}" has been approved!`,
     });
 
-    console.log(`✅ Event approved: ${event.title} - Notification sent to creator`);
+    // 2. Notify ALL users about the new event
+    const allUsers = await User.find({ 
+      _id: { $ne: event.createdBy }, // Exclude creator (they already got notified)
+      isApproved: true // Only notify approved users
+    });
+
+    // Create notifications for all users
+    const notificationsToCreate = allUsers.map(user => ({
+      user: user._id,
+      message: `🎉 New event: "${event.title}" on ${new Date(event.date).toLocaleDateString()}`,
+    }));
+
+    // Bulk insert notifications
+    if (notificationsToCreate.length > 0) {
+      await Notification.insertMany(notificationsToCreate);
+    }
+
+    console.log(`✅ Event approved: ${event.title}`);
+    console.log(`📢 Sent ${notificationsToCreate.length + 1} notifications (1 creator + ${notificationsToCreate.length} users)`);
 
     res.json({ message: "Event approved" });
   } catch (err) {
@@ -133,7 +152,7 @@ router.put("/:id/reject", auth, role("SUPER_ADMIN"), async (req, res) => {
       return res.status(404).json({ msg: "Event not found" });
     }
 
-    // Create notification for the event creator
+    // Create notification for the event creator only
     await Notification.create({
       user: event.createdBy,
       message: `❌ Your event "${event.title}" has been rejected.`,
