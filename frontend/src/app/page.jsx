@@ -3,63 +3,84 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <div className="max-w-4xl mx-auto mt-20 text-center">
-      <h1 className="text-5xl font-bold mb-6 text-blue-600">
-        Welcome to UniEvent
-      </h1>
-      <p className="text-xl text-gray-700 mb-12">
-        Your University Event Management System
-      </p>
+    <main className="min-h-screen bg-gradient-to-br from-indigo-600 to-purple-700 text-white flex flex-col">
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link 
+      {/* Navbar */}
+      <nav className="flex justify-between items-center px-10 py-6">
+        <h1 className="text-2xl font-bold">🎓 UniEvent</h1>
+        <Link
           href="/login"
-          className="p-8 bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow"
+          className="bg-white text-indigo-600 px-5 py-2 rounded-lg font-semibold hover:bg-gray-100"
         >
-          <div className="text-4xl mb-4">👤</div>
-          <h2 className="text-2xl font-bold mb-2">User Login</h2>
-          <p className="text-gray-600">View approved events</p>
+          Login
         </Link>
-        
-        <Link 
-          href="/login"
-          className="p-8 bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow"
-        >
-          <div className="text-4xl mb-4">👨‍💼</div>
-          <h2 className="text-2xl font-bold mb-2">Admin Login</h2>
-          <p className="text-gray-600">Create and manage events</p>
-        </Link>
-        
-        <Link 
-          href="/login"
-          className="p-8 bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow"
-        >
-          <div className="text-4xl mb-4">⭐</div>
-          <h2 className="text-2xl font-bold mb-2">Super Admin</h2>
-          <p className="text-gray-600">Approve pending events</p>
-        </Link>
-      </div>
-      
-      <div className="mt-12 p-6 bg-blue-50 rounded-lg">
-        <h3 className="text-xl font-bold mb-4">Test Credentials</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
-          <div className="bg-white p-4 rounded">
-            <p className="font-bold">User:</p>
-            <p className="text-sm">Email: user@test.com</p>
-            <p className="text-sm">Password: password</p>
-          </div>
-          <div className="bg-white p-4 rounded">
-            <p className="font-bold">Admin:</p>
-            <p className="text-sm">Email: admin@test.com</p>
-            <p className="text-sm">Password: password</p>
-          </div>
-          <div className="bg-white p-4 rounded">
-            <p className="font-bold">Super Admin:</p>
-            <p className="text-sm">Email: super@test.com</p>
-            <p className="text-sm">Password: password</p>
-          </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="flex flex-col items-center justify-center flex-1 text-center px-6">
+        <h2 className="text-4xl md:text-5xl font-extrabold mb-4">
+          All University Events. <br /> One Platform.
+        </h2>
+        <p className="text-lg md:text-xl max-w-2xl mb-8 text-indigo-100">
+          UniEvent centralizes campus events with role-based access and approval
+          workflow for students, admins, and super admins.
+        </p>
+
+        <div className="flex gap-4">
+          <Link
+            href="/login"
+            className="bg-white text-indigo-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100"
+          >
+            Get Started
+          </Link>
+
+          <a
+            href="#features"
+            className="border border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600"
+          >
+            Learn More
+          </a>
         </div>
-      </div>
+      </section>
+
+      {/* Features */}
+      <section
+        id="features"
+        className="bg-white text-gray-800 py-16 px-8"
+      >
+        <h3 className="text-3xl font-bold text-center mb-12">
+          Why UniEvent?
+        </h3>
+
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <Feature
+            title="👩‍🎓 Students"
+            text="View approved events, filter by category, and never miss out."
+          />
+          <Feature
+            title="🧑‍💼 Admins"
+            text="Create events and send them for super admin approval."
+          />
+          <Feature
+            title="🛡 Super Admin"
+            text="Approve or reject events to maintain quality and trust."
+          />
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="text-center py-6 bg-gray-900 text-gray-300">
+        © {new Date().getFullYear()} UniEvent • Built for Universities
+      </footer>
+    </main>
+  );
+}
+
+function Feature({ title, text }) {
+  return (
+    <div className="bg-gray-100 rounded-xl p-6 shadow hover:shadow-lg transition">
+      <h4 className="text-xl font-bold mb-2">{title}</h4>
+      <p>{text}</p>
     </div>
   );
 }
