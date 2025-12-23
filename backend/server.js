@@ -1,5 +1,6 @@
 const express = require("express");
 const connectDB = require("./config/db");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
@@ -9,7 +10,10 @@ connectDB();
 
 // CORS Configuration - IMPORTANT!
 app.use(cors({
-  origin: "http://localhost:3000", // Frontend URL
+  origin: [
+      "http://localhost:3000",
+      "http://localhost:3001", // second frontend
+    ],
   credentials: true
 }));
 

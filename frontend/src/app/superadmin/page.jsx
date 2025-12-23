@@ -9,8 +9,13 @@ export default function SuperAdminDashboard() {
   const [notification, setNotification] = useState(null);
   const [activeTab, setActiveTab] = useState("pending");
   const [pendingAdmins, setPendingAdmins] = useState([]);
+  const [users, setUsers] = useState([]);
 
-  
+  const fetchUsers = async () => {
+    const res = await api.get("/admin/users");
+    setUsers(res.data);
+  };
+
   const fetchPendingEvents = async () => {
     try {
       const res = await api.get("/admin/pending");
@@ -40,7 +45,6 @@ export default function SuperAdminDashboard() {
     });
   }
 };
-
 
 const handleApprove = async (id) => {
   try {
@@ -88,6 +92,21 @@ const handleReject = async (id) => {
     } catch (err) {
       setNotification({
         message: "Error approving admin",
+        type: "error",
+      });
+    }
+  };
+  const toggleRole = async (id) => {
+    try {
+      await api.put(`/admin/toggle-role/${id}`);
+      fetchUsers();
+      setNotification({
+        message: "User role updated",
+        type: "success",
+      });
+    } catch (err) {
+      setNotification({
+        message: "Failed to update role",
         type: "error",
       });
     }
@@ -166,6 +185,19 @@ const handleReject = async (id) => {
         >
           Pending Admins ({pendingAdmins.length})
         </button>
+        <button
+          onClick={() => {
+            setActiveTab("permissions");
+            fetchUsers();
+          }}
+          className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+            activeTab === "permissions"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          Permissions
+        </button>
 
       </div>
 
@@ -226,6 +258,44 @@ const handleReject = async (id) => {
           )}
         </div>
       )}
+      {activeTab === "permissions" && (
+  <div>
+    <h2 className="text-2xl font-bold mb-4">🔐 User Permissions</h2>
+
+    <div className="space-y-4">
+      {users.map((user) => (
+        <div
+          key={user._id}
+          className="p-6 bg-white shadow rounded-lg flex justify-between items-center"
+        >
+          <div>
+            <p className="font-semibold text-lg">{user.name}</p>
+            <p className="text-gray-600">{user.email}</p>
+            <span className="text-sm text-gray-500">
+              Role: {user.role}
+            </span>
+          </div>
+
+          {user.role !== "SUPER_ADMIN" && (
+            <button
+              onClick={() => toggleRole(user._id)}
+              className={`px-6 py-3 rounded font-semibold text-white ${
+                user.role === "ADMIN"
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-green-500 hover:bg-green-600"
+              }`}
+            >
+              {user.role === "ADMIN"
+                ? "Demote to User"
+                : "Promote to Admin"}
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
 
       {/* All Events */}
       {activeTab === "all" && (
