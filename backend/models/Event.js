@@ -4,14 +4,9 @@ const eventSchema = new mongoose.Schema(
   {
     title: String,
     description: String,
-    category: String,
     date: Date,
+    category: String,
     organizer: String,
-
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
 
     status: {
       type: String,
@@ -19,8 +14,10 @@ const eventSchema = new mongoose.Schema(
       default: "PENDING",
     },
 
-    interestedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    goingUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: true }
 );

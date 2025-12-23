@@ -93,4 +93,16 @@ router.put("/:id/reject", auth, role("SUPER_ADMIN"), async (req, res) => {
   res.json({ message: "Event rejected" });
 });
 
+/**
+ * GET ALL APPROVED EVENTS (User Dashboard)
+ */
+router.get("/", async (req, res) => {
+  try {
+    const events = await Event.find({ status: "APPROVED" }).sort({ date: 1 });
+    res.json(events);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch events" });
+  }
+});
+
 module.exports = router;
