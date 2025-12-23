@@ -9,7 +9,7 @@ export default function Header() {
     <header className="bg-blue-600 text-white p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/" className="text-2xl font-bold">
-          🎓 UniEvent
+          UniVibe
         </Link>
 
         <nav className="flex items-center gap-6">
