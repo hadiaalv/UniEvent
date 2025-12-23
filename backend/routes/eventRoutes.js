@@ -8,10 +8,16 @@ const router = express.Router();
 /**
  * 🔓 PUBLIC – approved events (for users)
  */
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
+  if (req.user.role === "SUPER_ADMIN") {
+    const events = await Event.find();
+    return res.json(events);
+  }
+
   const events = await Event.find({ status: "APPROVED" });
   res.json(events);
 });
+
 
 /**
  * 👨‍💼 ADMIN – get my events

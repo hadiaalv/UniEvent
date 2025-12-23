@@ -15,10 +15,7 @@ export default function AdminDashboard() {
   const [notification, setNotification] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null);
 
-  useEffect(() => {
-    fetchMyEvents();
-  }, []);
-
+  
   const fetchMyEvents = async () => {
     try {
       // This would need a backend endpoint to get events by creator
@@ -28,7 +25,11 @@ export default function AdminDashboard() {
       console.error("Error fetching events:", err);
     }
   };
-
+  
+  useEffect(() => {
+    fetchMyEvents();
+  }, []);
+  
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };

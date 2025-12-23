@@ -8,12 +8,9 @@ export default function SuperAdminDashboard() {
   const [allEvents, setAllEvents] = useState([]);
   const [notification, setNotification] = useState(null);
   const [activeTab, setActiveTab] = useState("pending");
+  const [pendingAdmins, setPendingAdmins] = useState([]);
 
-  useEffect(() => {
-    fetchPendingEvents();
-    fetchAllEvents();
-  }, []);
-
+  
   const fetchPendingEvents = async () => {
     try {
       const res = await api.get("/admin/pending");
@@ -22,7 +19,7 @@ export default function SuperAdminDashboard() {
       setNotification({ message: "Error fetching pending events", type: "error" });
     }
   };
-
+  
   const fetchAllEvents = async () => {
     try {
       const res = await api.get("/events");
@@ -31,21 +28,34 @@ export default function SuperAdminDashboard() {
       console.error("Error fetching all events:", err);
     }
   };
-
-  const handleApprove = async (id) => {
+  
+  const fetchPendingAdmins = async () => {
     try {
-      await api.put(`/admin/approve/${id}`);
-      setPendingEvents(pendingEvents.filter((ev) => ev._id !== id));
-      setNotification({ message: "Event approved successfully!", type: "success" });
-      fetchAllEvents();
+      const res = await api.get("/admin/pending-admins");
+      setPendingAdmins(res.data);
     } catch (err) {
-      setNotification({ message: "Error approving event", type: "error" });
-    }
-  };
+      setNotification({
+      message: "Error fetching pending admins",
+      type: "error",
+    });
+  }
+};
 
-  const handleReject = async (id) => {
-    if (!confirm("Are you sure you want to reject this event?")) return;
-    
+
+const handleApprove = async (id) => {
+  try {
+    await api.put(`/admin/approve/${id}`);
+    setPendingEvents(pendingEvents.filter((ev) => ev._id !== id));
+    setNotification({ message: "Event approved successfully!", type: "success" });
+    fetchAllEvents();
+  } catch (err) {
+    setNotification({ message: "Error approving event", type: "error" });
+  }
+};
+
+const handleReject = async (id) => {
+  if (!confirm("Are you sure you want to reject this event?")) return;
+  
     try {
       await api.delete(`/events/${id}`);
       setPendingEvents(pendingEvents.filter((ev) => ev._id !== id));
@@ -67,6 +77,28 @@ export default function SuperAdminDashboard() {
     }
   };
 
+  const handleApproveAdmin = async (id) => {
+    try {
+      await api.put(`/admin/approve-admin/${id}`);
+      setPendingAdmins(pendingAdmins.filter((a) => a._id !== id));
+      setNotification({
+        message: "Admin approved successfully",
+        type: "success",
+      });
+    } catch (err) {
+      setNotification({
+        message: "Error approving admin",
+        type: "error",
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchPendingEvents();
+    fetchAllEvents();
+    fetchPendingAdmins();
+  }, []);
+  
   const approvedEvents = allEvents.filter((e) => e.status === "APPROVED");
   const stats = {
     pending: pendingEvents.length,
@@ -124,6 +156,17 @@ export default function SuperAdminDashboard() {
         >
           All Events ({stats.total})
         </button>
+        <button
+          onClick={() => setActiveTab("admins")}
+          className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+            activeTab === "admins"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          Pending Admins ({pendingAdmins.length})
+        </button>
+
       </div>
 
       {/* Pending Events */}
@@ -235,6 +278,40 @@ export default function SuperAdminDashboard() {
           )}
         </div>
       )}
+      {/* Pending Admins */}
+{activeTab === "admins" && (
+  <div>
+    <h2 className="text-2xl font-bold mb-4">👨‍💼 Pending Admin Approvals</h2>
+
+    {pendingAdmins.length === 0 ? (
+      <div className="bg-white p-8 rounded-lg shadow text-center">
+        <p className="text-gray-500">No pending admins</p>
+      </div>
+    ) : (
+      <div className="space-y-4">
+        {pendingAdmins.map((admin) => (
+          <div
+            key={admin._id}
+            className="p-6 bg-white shadow rounded-lg flex justify-between items-center"
+          >
+            <div>
+              <p className="text-lg font-semibold">{admin.name}</p>
+              <p className="text-gray-600">{admin.email}</p>
+            </div>
+
+            <button
+              onClick={() => handleApproveAdmin(admin._id)}
+              className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded font-semibold transition-colors"
+            >
+              ✓ Approve Admin
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
     </div>
   );
 }
