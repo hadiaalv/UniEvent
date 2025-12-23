@@ -15,7 +15,7 @@ export default function Header() {
           <Link href="/" className="flex items-center gap-2 group">
             <span className="text-3xl transition-transform group-hover:scale-110">🎓</span>
             <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              UniEvent
+              UniVibe
             </h1>
           </Link>
 
