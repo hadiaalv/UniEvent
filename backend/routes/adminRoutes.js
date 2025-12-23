@@ -1,34 +1,13 @@
-const router = require("express").Router();
-const Event = require("../models/Event");
-const Notification = require("../models/Notification");
+const express = require("express");
+const User = require("../models/User");
 const auth = require("../middleware/authMiddleware");
 const role = require("../middleware/roleMiddleware");
 
-// View pending events
-router.get("/pending", auth, role(["SUPER_ADMIN"]), async (req, res) => {
-  const events = await Event.find({ status: "PENDING" });
-  res.json(events);
-});
+const router = express.Router();
 
-// Approve event
-router.put("/approve/:id", auth, role(["SUPER_ADMIN"]), async (req, res) => {
-  try {
-    const event = await Event.findByIdAndUpdate(
-      req.params.id,
-      { status: "APPROVED" },
-      { new: true }
-    );
-
-    await Notification.create({
-      userId: event.createdBy,
-      message: `Your event "${event.title}" was approved`,
-    });
-
-    res.json(event);
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-  }
+router.put("/approve-admin/:id", auth, role("SUPER_ADMIN"), async (req, res) => {
+  await User.findByIdAndUpdate(req.params.id, { isApproved: true });
+  res.json({ message: "Admin approved" });
 });
 
 module.exports = router;
-    

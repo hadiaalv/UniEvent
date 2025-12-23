@@ -1,7 +1,6 @@
 const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
 const connectDB = require("./config/db");
+require("dotenv").config();
 
 const app = express();
 
@@ -23,7 +22,6 @@ app.get("/", (req, res) => {
   res.json({ message: "UniEvent API is running!" });
 });
 
-// Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/events", require("./routes/eventRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));

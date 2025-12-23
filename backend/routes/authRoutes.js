@@ -1,9 +1,11 @@
-const router = require("express").Router();
-const User = require("../models/User");
+const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
-// REGISTER
+const router = express.Router();
+
+// Register
 router.post("/register", async (req, res) => {
   console.log("📝 Register attempt:", req.body.email);
   
@@ -45,7 +47,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// LOGIN
+// Login
 router.post("/login", async (req, res) => {
   console.log("🔐 Login attempt:", req.body.email);
   
