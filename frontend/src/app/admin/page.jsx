@@ -22,7 +22,7 @@ export default function AdminDashboard() {
   const fetchMyEvents = async () => {
     try {
       // This would need a backend endpoint to get events by creator
-      const res = await api.get("/events");
+      const res = await api.get("/events/my");
       setMyEvents(res.data);
     } catch (err) {
       console.error("Error fetching events:", err);
