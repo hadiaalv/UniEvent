@@ -1,5 +1,6 @@
 const express = require("express");
 const Event = require("../models/Event");
+const Notification = require("../models/Notification");
 const auth = require("../middleware/authMiddleware");
 const role = require("../middleware/roleMiddleware");
 
@@ -12,6 +13,7 @@ router.get("/public", async (req, res) => {
   const events = await Event.find({ status: "APPROVED" }).sort({ date: 1 });
   res.json(events);
 });
+
 /**
  * 👑 SUPER ADMIN – pending events only
  */
@@ -19,6 +21,7 @@ router.get("/pending", auth, role("SUPER_ADMIN"), async (req, res) => {
   const events = await Event.find({ status: "PENDING" }).sort({ createdAt: -1 });
   res.json(events);
 });
+
 /**
  * 👑 SUPER ADMIN – all events (approval panel)
  */
@@ -89,16 +92,60 @@ router.delete("/:id", auth, role("ADMIN", "SUPER_ADMIN"), async (req, res) => {
  * 👑 SUPER ADMIN – approve event
  */
 router.put("/:id/approve", auth, role("SUPER_ADMIN"), async (req, res) => {
-  await Event.findByIdAndUpdate(req.params.id, { status: "APPROVED" });
-  res.json({ message: "Event approved" });
+  try {
+    const event = await Event.findByIdAndUpdate(
+      req.params.id, 
+      { status: "APPROVED" },
+      { new: true }
+    );
+
+    if (!event) {
+      return res.status(404).json({ msg: "Event not found" });
+    }
+
+    // Create notification for the event creator
+    await Notification.create({
+      user: event.createdBy,
+      message: `✅ Your event "${event.title}" has been approved!`,
+    });
+
+    console.log(`✅ Event approved: ${event.title} - Notification sent to creator`);
+
+    res.json({ message: "Event approved" });
+  } catch (err) {
+    console.error("Error approving event:", err);
+    res.status(500).json({ msg: "Failed to approve event" });
+  }
 });
 
 /**
  * 👑 SUPER ADMIN – reject event
  */
 router.put("/:id/reject", auth, role("SUPER_ADMIN"), async (req, res) => {
-  await Event.findByIdAndUpdate(req.params.id, { status: "REJECTED" });
-  res.json({ message: "Event rejected" });
+  try {
+    const event = await Event.findByIdAndUpdate(
+      req.params.id, 
+      { status: "REJECTED" },
+      { new: true }
+    );
+
+    if (!event) {
+      return res.status(404).json({ msg: "Event not found" });
+    }
+
+    // Create notification for the event creator
+    await Notification.create({
+      user: event.createdBy,
+      message: `❌ Your event "${event.title}" has been rejected.`,
+    });
+
+    console.log(`❌ Event rejected: ${event.title} - Notification sent to creator`);
+
+    res.json({ message: "Event rejected" });
+  } catch (err) {
+    console.error("Error rejecting event:", err);
+    res.status(500).json({ msg: "Failed to reject event" });
+  }
 });
 
 /**

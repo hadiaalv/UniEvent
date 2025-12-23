@@ -26,9 +26,12 @@ app.get("/", (req, res) => {
   res.json({ message: "UniEvent API is running!" });
 });
 
+// Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/events", require("./routes/eventRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
+app.use("/api/config", require("./routes/configRoutes"));
+app.use("/api/notifications", require("./routes/notificationRoutes")); // ✅ ADD THIS LINE
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -44,8 +47,3 @@ app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
   console.log(`✅ Frontend should be on http://localhost:3000`);
 });
-
-const configRoutes = require("./routes/configRoutes");
-
-// Add this with your other routes
-app.use("/api/config", configRoutes);
