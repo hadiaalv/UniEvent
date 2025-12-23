@@ -6,18 +6,20 @@ const role = require("../middleware/roleMiddleware");
 const router = express.Router();
 
 /**
- * 🔓 PUBLIC – approved events (for users)
+ * 🔓 PUBLIC – approved events only
  */
-router.get("/", auth, async (req, res) => {
-  if (req.user.role === "SUPER_ADMIN") {
-    const events = await Event.find();
-    return res.json(events);
-  }
-
-  const events = await Event.find({ status: "APPROVED" });
+router.get("/public", async (req, res) => {
+  const events = await Event.find({ status: "APPROVED" }).sort({ date: 1 });
   res.json(events);
 });
 
+/**
+ * 👑 SUPER ADMIN – all events (approval panel)
+ */
+router.get("/all", auth, role("SUPER_ADMIN"), async (req, res) => {
+  const events = await Event.find().sort({ createdAt: -1 });
+  res.json(events);
+});
 
 /**
  * 👨‍💼 ADMIN – get my events
@@ -91,18 +93,6 @@ router.put("/:id/approve", auth, role("SUPER_ADMIN"), async (req, res) => {
 router.put("/:id/reject", auth, role("SUPER_ADMIN"), async (req, res) => {
   await Event.findByIdAndUpdate(req.params.id, { status: "REJECTED" });
   res.json({ message: "Event rejected" });
-});
-
-/**
- * GET ALL APPROVED EVENTS (User Dashboard)
- */
-router.get("/", async (req, res) => {
-  try {
-    const events = await Event.find({ status: "APPROVED" }).sort({ date: 1 });
-    res.json(events);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to fetch events" });
-  }
 });
 
 module.exports = router;

@@ -18,13 +18,13 @@ export default function SuperAdminDashboard() {
 
   const fetchPendingEvents = async () => {
     try {
-      const res = await api.get("/admin/pending");
+      const res = await api.get("/events/pending");
       setPendingEvents(res.data);
     } catch (err) {
       setNotification({ message: "Error fetching pending events", type: "error" });
     }
   };
-  
+
   const fetchAllEvents = async () => {
     try {
       const res = await api.get("/events");
