@@ -13,7 +13,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "http://localhost:3001",
-      "https://your-frontend.vercel.app" // ✅ ADD THIS
+      "https://uni-vibe-bice.vercel.app" // 
     ],
     credentials: true,
   })
