@@ -1,31 +1,27 @@
 const express = require("express");
 const connectDB = require("./config/db");
 const cors = require("cors");
-const cookieParser = require("cookie-parser");
 
 const app = express();
 
-// Connect to MongoDB
+// Connect to MongoDB (safe for serverless)
 connectDB();
 
 // CORS Configuration
 app.use(
   cors({
     origin: [
-      "http://localhost:3000", // local frontend
-      "http://localhost:3001", // optional local dev
-      "https://uni-vibe-bice.vercel.app", // deployed frontend
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "https://uni-vibe-bice.vercel.app" // 
     ],
-    credentials: true, // needed if you use cookies for auth
+    credentials: true,
   })
 );
 
 // Body Parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Cookie Parser (needed if you use cookies)
-app.use(cookieParser());
 
 // Test Route
 app.get("/", (req, res) => {
@@ -46,5 +42,6 @@ app.use((err, req, res, next) => {
     msg: err.message || "Internal server error",
   });
 });
+
 
 module.exports = app;
