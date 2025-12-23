@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import api from "../lib/api";
 
 export default function HomePage() {
@@ -9,10 +10,20 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showGallery, setShowGallery] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     fetchEvents();
+    checkAuthStatus();
   }, []);
+
+  const checkAuthStatus = () => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      setIsLoggedIn(!!token);
+    }
+  };
 
   const fetchEvents = async () => {
     try {
@@ -40,9 +51,6 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-white">
-      
-
-
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-10"></div>
@@ -65,20 +73,33 @@ export default function HomePage() {
               and approval workflows for the entire university community.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/login"
-                className="bg-white text-indigo-600 px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl transform hover:scale-105 transition-all"
-              >
-                Get Started →
-              </Link>
-              <a
-                href="#upcoming"
-                className="border-2 border-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-indigo-600 transition-all"
-              >
-                Explore Events
-              </a>
-            </div>
+            {!isLoggedIn && (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href="/login"
+                  className="bg-white text-indigo-600 px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl transform hover:scale-105 transition-all"
+                >
+                  Get Started →
+                </Link>
+                <a
+                  href="#upcoming"
+                  className="border-2 border-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-indigo-600 transition-all"
+                >
+                  Explore Events
+                </a>
+              </div>
+            )}
+
+            {isLoggedIn && (
+              <div className="flex justify-center">
+                <a
+                  href="#upcoming"
+                  className="border-2 border-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-indigo-600 transition-all"
+                >
+                  Explore Events
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -226,7 +247,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose UniVibe?
+              Why Choose UniEvent?
             </h3>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               A complete event management solution designed specifically for university communities
@@ -257,22 +278,24 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-indigo-600 to-purple-600 py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Get Started?
-          </h3>
-          <p className="text-indigo-100 text-lg mb-8">
-            Join thousands of students and faculty members managing events on UniEvent
-          </p>
-          <Link
-            href="/login"
-            className="inline-block bg-white text-indigo-600 px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl transform hover:scale-105 transition-all"
-          >
-            Start Now - It's Free →
-          </Link>
-        </div>
-      </section>
+      {!isLoggedIn && (
+        <section className="bg-gradient-to-r from-indigo-600 to-purple-600 py-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
+              Ready to Get Started?
+            </h3>
+            <p className="text-indigo-100 text-lg mb-8">
+              Join thousands of students and faculty members managing events on UniEvent
+            </p>
+            <Link
+              href="/login"
+              className="inline-block bg-white text-indigo-600 px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl transform hover:scale-105 transition-all"
+            >
+              Start Now - It's Free →
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* Image Gallery Modal */}
       {showGallery && selectedEvent && (
@@ -286,7 +309,7 @@ export default function HomePage() {
               }}
               className="fixed top-4 right-4 bg-white hover:bg-gray-200 text-gray-900 w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold shadow-lg z-10 transition-all"
             >
-              x
+              ×
             </button>
 
             {/* Event Info */}
