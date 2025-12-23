@@ -226,7 +226,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose UniEvent?
+              Why Choose UniVibe?
             </h3>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               A complete event management solution designed specifically for university communities
