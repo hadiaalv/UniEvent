@@ -1,46 +1,44 @@
-const router = require("express").Router();
+const express = require("express");
 const Event = require("../models/Event");
 const auth = require("../middleware/authMiddleware");
 const role = require("../middleware/roleMiddleware");
 
-// USER: View approved events
-router.get("/", auth, async (req, res) => {
-  const events = await Event.find({ status: "APPROVED" });
+const router = express.Router();
+
+// Get approved events
+router.get("/", async (req, res) => {
+  const events = await Event.find({ isApproved: true });
   res.json(events);
 });
 
-// ADMIN: Create event
-router.post("/", auth, role(["ADMIN"]), async (req, res) => {
-  try {
-    const event = await Event.create({ ...req.body, createdBy: req.user.id });
-    res.json(event);
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-  }
+// Admin creates event
+router.post("/", auth, role("ADMIN", "SUPER_ADMIN"), async (req, res) => {
+  const event = await Event.create({
+    ...req.body,
+    createdBy: req.user.id,
+  });
+  res.json({ message: "Event submitted for approval" });
 });
 
-// ADMIN: Update their own pending event
-router.put("/:id", auth, role(["ADMIN"]), async (req, res) => {
-  try {
-    const event = await Event.findOne({ _id: req.params.id, createdBy: req.user.id, status: "PENDING" });
-    if (!event) return res.status(403).json({ msg: "Cannot edit this event" });
-    
-    Object.assign(event, req.body);
-    await event.save();
-    res.json(event);
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-  }
+// Super admin approves event
+router.put("/:id/approve", auth, role("SUPER_ADMIN"), async (req, res) => {
+  await Event.findByIdAndUpdate(req.params.id, { isApproved: true });
+  res.json({ message: "Event approved" });
 });
 
-// ADMIN/SUPER_ADMIN: Delete event
-router.delete("/:id", auth, role(["ADMIN", "SUPER_ADMIN"]), async (req, res) => {
-  try {
-    await Event.findByIdAndDelete(req.params.id);
-    res.json({ msg: "Event deleted" });
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-  }
+// Interested / Going
+router.post("/:id/interested", auth, async (req, res) => {
+  await Event.findByIdAndUpdate(req.params.id, {
+    $addToSet: { interestedUsers: req.user.id },
+  });
+  res.json({ message: "Marked interested" });
+});
+
+router.post("/:id/going", auth, async (req, res) => {
+  await Event.findByIdAndUpdate(req.params.id, {
+    $addToSet: { goingUsers: req.user.id },
+  });
+  res.json({ message: "Marked going" });
 });
 
 module.exports = router;

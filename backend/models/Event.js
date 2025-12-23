@@ -3,18 +3,29 @@ const mongoose = require("mongoose");
 const eventSchema = new mongoose.Schema({
   title: String,
   description: String,
-  date: Date,
   category: String,
+  date: Date,
   organizer: String,
-  status: {
-    type: String,
-    enum: ["PENDING", "APPROVED", "REJECTED"],
-    default: "PENDING",
-  },
+
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-});
+
+  isApproved: {
+    type: Boolean,
+    default: false,
+  },
+
+  interestedUsers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  }],
+
+  goingUsers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  }],
+}, { timestamps: true });
 
 module.exports = mongoose.model("Event", eventSchema);

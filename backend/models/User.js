@@ -9,6 +9,12 @@ const userSchema = new mongoose.Schema({
     enum: ["USER", "ADMIN", "SUPER_ADMIN"],
     default: "USER",
   },
+  isApproved: {
+    type: Boolean,
+    default: function () {
+      return this.role !== "ADMIN";
+    },
+  },
 });
 
 module.exports = mongoose.model("User", userSchema);
