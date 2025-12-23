@@ -1,17 +1,16 @@
+"use client";
 import "./../styles/globals.css";
-
-export const metadata = {
-  title: "UniEvent",
-};
+import { AuthProvider } from "../context/AuthContext";
+import Header from "../components/Header";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <header className="bg-blue-600 text-white p-4 font-bold">
-          UniEvent
-        </header>
-        <main className="p-4">{children}</main>
+        <AuthProvider>
+          <Header />
+          <main className="container mx-auto p-4">{children}</main>
+        </AuthProvider>
       </body>
     </html>
   );
