@@ -11,18 +11,22 @@ export default function LoginPage() {
   const { login } = useAuth();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await api.post("/auth/login", { email, password });
-      login(res.data.token, res.data.role);
-      setNotification({ message: "Login successful!", type: "success" });
-    } catch (err) {
-      setNotification({ 
-        message: err.response?.data?.msg || "Login failed", 
-        type: "error" 
-      });
-    }
-  };
+  e.preventDefault();
+  try {
+    const res = await api.post("/auth/login", { email, password });
+    login(res.data.token, res.data.role);
+    const message = res.data.message || "Login successful!";
+    const type = res.data.role === "USER" && res.data.user?.actualRole === "ADMIN" 
+      ? "info" 
+      : "success";
+    setNotification({ message, type });
+  } catch (err) {
+    setNotification({ 
+      message: err.response?.data?.message || err.response?.data?.msg || "Login failed", 
+      type: "error" 
+    });
+  }
+};
 
   return (
     <div className="max-w-md mx-auto mt-20 p-8 bg-white shadow-lg rounded-lg">
@@ -77,15 +81,6 @@ export default function LoginPage() {
           Register here
         </a>
       </p>
-
-      <div className="mt-8 p-4 bg-gray-50 rounded">
-        <p className="text-sm font-semibold mb-2">Test Accounts:</p>
-        <div className="text-xs space-y-1">
-          <p>👤 User: user@test.com / password</p>
-          <p>👨‍💼 Admin: admin@test.com / password</p>
-          <p>⭐ Super: super@test.com / password</p>
-        </div>
-      </div>
     </div>
   );
 }
