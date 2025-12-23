@@ -101,4 +101,35 @@ router.put("/:id/reject", auth, role("SUPER_ADMIN"), async (req, res) => {
   res.json({ message: "Event rejected" });
 });
 
+/**
+ * 👨‍💼 ADMIN – add images to past event
+ */
+router.put("/:id/images", auth, role("ADMIN", "SUPER_ADMIN"), async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+
+    if (!event)
+      return res.status(404).json({ msg: "Event not found" });
+
+    if (event.createdBy.toString() !== req.user.id && req.user.role !== "SUPER_ADMIN")
+      return res.status(403).json({ msg: "Not your event" });
+
+    // Check if event has passed
+    if (new Date(event.date) > new Date())
+      return res.status(400).json({ msg: "Cannot add images to upcoming events" });
+
+    const { images } = req.body;
+    
+    if (!images || !Array.isArray(images))
+      return res.status(400).json({ msg: "Images must be an array" });
+
+    event.images = images;
+    await event.save();
+
+    res.json({ message: "Images added successfully", event });
+  } catch (err) {
+    res.status(500).json({ msg: "Error adding images" });
+  }
+});
+
 module.exports = router;

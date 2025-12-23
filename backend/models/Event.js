@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const eventSchema = new mongoose.Schema(
   {
     title: String,
@@ -18,8 +17,12 @@ const eventSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+
+    images: {
+      type: [String], // Array of image URLs
+      default: [],
+    },
   },
   { timestamps: true }
 );
-
 module.exports = mongoose.model("Event", eventSchema);

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import api from "../../lib/api";
 import Notification from "../../components/Notification";
+import ImageUploadModal from "../../components/ImageUploadModal";
 
 export default function AdminDashboard() {
   const [formData, setFormData] = useState({
@@ -14,11 +15,22 @@ export default function AdminDashboard() {
   const [myEvents, setMyEvents] = useState([]);
   const [notification, setNotification] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null);
-
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   
+  const handleAddImages = async (images) => {
+    try {
+      await api.put(`/events/${selectedEvent._id}/images`, { images });
+      setNotification({ message: "Images added successfully!", type: "success" });
+      setShowImageModal(false);
+      fetchMyEvents(); // Refresh events
+    } catch (err) {
+      setNotification({ message: "Error adding images", type: "error" });
+    }
+  };
+
   const fetchMyEvents = async () => {
     try {
-      // This would need a backend endpoint to get events by creator
       const res = await api.get("/events/my");
       setMyEvents(res.data);
     } catch (err) {
@@ -246,6 +258,10 @@ export default function AdminDashboard() {
                   event={event}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
+                  onAddPhotos={(event) => {
+                    setSelectedEvent(event);
+                    setShowImageModal(true);
+                  }}
                   canEdit
                 />
               ))}
@@ -259,7 +275,15 @@ export default function AdminDashboard() {
             <h2 className="text-2xl font-bold mb-4">✅ Approved Events</h2>
             <div className="space-y-4">
               {approvedEvents.map((event) => (
-                <EventItem key={event._id} event={event} canEdit={false} />
+                <EventItem 
+                  key={event._id} 
+                  event={event} 
+                  onAddPhotos={(event) => {
+                    setSelectedEvent(event);
+                    setShowImageModal(true);
+                  }}
+                  canEdit={false} 
+                />
               ))}
             </div>
           </div>
@@ -288,11 +312,20 @@ export default function AdminDashboard() {
           </div>
         )}
       </div>
+
+      {/* Image Upload Modal */}
+      {showImageModal && selectedEvent && (
+        <ImageUploadModal
+          event={selectedEvent}
+          onClose={() => setShowImageModal(false)}
+          onSave={handleAddImages}
+        />
+      )}
     </div>
   );
 }
 
-function EventItem({ event, onEdit, onDelete, canEdit }) {
+function EventItem({ event, onEdit, onDelete, onAddPhotos, canEdit }) {
   return (
     <div className="p-6 bg-white shadow rounded-lg">
       <div className="flex justify-between items-start">
@@ -318,26 +351,33 @@ function EventItem({ event, onEdit, onDelete, canEdit }) {
             <div className="col-span-2">👥 {event.organizer}</div>
           </div>
         </div>
-        {(canEdit || onDelete) && (
-          <div className="flex gap-2 ml-4">
-            {canEdit && onEdit && (
-              <button
-                onClick={() => onEdit(event)}
-                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors"
-              >
-                Edit
-              </button>
-            )}
-            {onDelete && (
-              <button
-                onClick={() => onDelete(event._id)}
-                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded transition-colors"
-              >
-                Delete
-              </button>
-            )}
-          </div>
-        )}
+        <div className="flex gap-2 ml-4 flex-col">
+          {/* Add Photos button for past events */}
+          {onAddPhotos && new Date(event.date) < new Date() && (
+            <button
+              onClick={() => onAddPhotos(event)}
+              className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded font-semibold"
+            >
+              📸 Add Photos ({event.images?.length || 0})
+            </button>
+          )}
+          {canEdit && onEdit && (
+            <button
+              onClick={() => onEdit(event)}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors"
+            >
+              Edit
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={() => onDelete(event._id)}
+              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded transition-colors"
+            >
+              Delete
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
