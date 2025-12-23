@@ -27,7 +27,7 @@ export default function SuperAdminDashboard() {
 
   const fetchAllEvents = async () => {
     try {
-      const res = await api.get("/events");
+      const res = await api.get("/events/all");
       setAllEvents(res.data);
     } catch (err) {
       console.error("Error fetching all events:", err);
@@ -48,7 +48,7 @@ export default function SuperAdminDashboard() {
 
 const handleApprove = async (id) => {
   try {
-    await api.put(`/admin/approve/${id}`);
+    await api.put(`/events/${id}/approve`);
     setPendingEvents(pendingEvents.filter((ev) => ev._id !== id));
     setNotification({ message: "Event approved successfully!", type: "success" });
     fetchAllEvents();
@@ -56,14 +56,14 @@ const handleApprove = async (id) => {
     setNotification({ message: "Error approving event", type: "error" });
   }
 };
-
 const handleReject = async (id) => {
   if (!confirm("Are you sure you want to reject this event?")) return;
   
     try {
-      await api.delete(`/events/${id}`);
+      await api.put(`/events/${id}/reject`);
       setPendingEvents(pendingEvents.filter((ev) => ev._id !== id));
       setNotification({ message: "Event rejected", type: "info" });
+      fetchAllEvents();
     } catch (err) {
       setNotification({ message: "Error rejecting event", type: "error" });
     }

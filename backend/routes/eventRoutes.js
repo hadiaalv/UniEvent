@@ -12,7 +12,13 @@ router.get("/public", async (req, res) => {
   const events = await Event.find({ status: "APPROVED" }).sort({ date: 1 });
   res.json(events);
 });
-
+/**
+ * 👑 SUPER ADMIN – pending events only
+ */
+router.get("/pending", auth, role("SUPER_ADMIN"), async (req, res) => {
+  const events = await Event.find({ status: "PENDING" }).sort({ createdAt: -1 });
+  res.json(events);
+});
 /**
  * 👑 SUPER ADMIN – all events (approval panel)
  */
