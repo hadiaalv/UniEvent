@@ -38,6 +38,11 @@ export default function NotificationBell({ userId, role }) {
     }
   };
 
+  const handleClose = (e) => {
+    e.stopPropagation(); // Prevent event bubbling
+    setShowDropdown(false);
+  };
+
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   return (
@@ -102,7 +107,7 @@ export default function NotificationBell({ userId, role }) {
             {notifications.length > 0 && (
               <div className="p-3 bg-gray-50 text-center">
                 <button 
-                  onClick={() => setShowDropdown(false)}
+                  onClick={handleClose}
                   className="text-sm text-indigo-600 hover:text-indigo-700 font-semibold"
                 >
                   Close
