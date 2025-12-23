@@ -126,7 +126,7 @@ const handleReject = async (id) => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50">
       {notification && (
         <Notification
           message={notification.message}
@@ -135,253 +135,372 @@ const handleReject = async (id) => {
         />
       )}
 
-      <h1 className="text-4xl font-bold mb-8">⭐ Super Admin Panel</h1>
-
-      {/* Stats Dashboard */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-yellow-100 p-6 rounded-lg">
-          <h3 className="text-3xl font-bold text-yellow-600">{stats.pending}</h3>
-          <p className="text-gray-700">Pending Review</p>
-        </div>
-        <div className="bg-green-100 p-6 rounded-lg">
-          <h3 className="text-3xl font-bold text-green-600">{stats.approved}</h3>
-          <p className="text-gray-700">Approved Events</p>
-        </div>
-        <div className="bg-blue-100 p-6 rounded-lg">
-          <h3 className="text-3xl font-bold text-blue-600">{stats.total}</h3>
-          <p className="text-gray-700">Total Events</p>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-4 mb-6">
-        <button
-          onClick={() => setActiveTab("pending")}
-          className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-            activeTab === "pending"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
-        >
-          Pending ({stats.pending})
-        </button>
-        <button
-          onClick={() => setActiveTab("all")}
-          className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-            activeTab === "all"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
-        >
-          All Events ({stats.total})
-        </button>
-        <button
-          onClick={() => setActiveTab("admins")}
-          className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-            activeTab === "admins"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
-        >
-          Pending Admins ({pendingAdmins.length})
-        </button>
-        <button
-          onClick={() => {
-            setActiveTab("permissions");
-            fetchUsers();
-          }}
-          className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-            activeTab === "permissions"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
-        >
-          Permissions
-        </button>
-
-      </div>
-
-      {/* Pending Events */}
-      {activeTab === "pending" && (
-        <div>
-          <h2 className="text-2xl font-bold mb-4">⏳ Events Awaiting Approval</h2>
-          {pendingEvents.length === 0 ? (
-            <div className="bg-white p-8 rounded-lg shadow text-center">
-              <p className="text-gray-500">No pending events to review</p>
+      {/* Header Section */}
+      <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white py-12 px-4 sm:px-6 lg:px-8 mb-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="relative">
+            <div className="absolute inset-0">
+              <div className="absolute top-0 left-0 w-48 h-48 bg-white rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+              <div className="absolute top-0 right-0 w-48 h-48 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
             </div>
-          ) : (
-            <div className="space-y-4">
-              {pendingEvents.map((event) => (
-                <div
-                  key={event._id}
-                  className="p-6 bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow"
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-blue-600 mb-2">
-                        {event.title}
-                      </h3>
-                      <p className="text-gray-700 mb-4">{event.description}</p>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm text-gray-600">
-                        <div>
-                          <span className="font-semibold">📅 Date:</span>{" "}
-                          {new Date(event.date).toLocaleDateString()}
+            <div className="relative">
+              <h1 className="text-3xl md:text-5xl font-extrabold mb-3">
+                ⭐ Super Admin Panel
+              </h1>
+              <p className="text-lg md:text-xl text-indigo-100">
+                Manage events, users, and permissions across the platform
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        {/* Stats Dashboard */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
+          <div className="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
+                  {stats.pending}
+                </h3>
+                <p className="text-gray-600 font-medium mt-1">Pending Review</p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
+                ⏳
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
+                  {stats.approved}
+                </h3>
+                <p className="text-gray-600 font-medium mt-1">Approved Events</p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
+                ✓
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
+                  {stats.total}
+                </h3>
+                <p className="text-gray-600 font-medium mt-1">Total Events</p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
+                📋
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex flex-wrap gap-3 md:gap-4 mb-8">
+          <button
+            onClick={() => setActiveTab("pending")}
+            className={`px-4 md:px-6 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-md ${
+              activeTab === "pending"
+                ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg"
+                : "bg-white text-gray-700 hover:shadow-lg"
+            }`}
+          >
+            <span className="hidden sm:inline">Pending </span>({stats.pending})
+          </button>
+          <button
+            onClick={() => setActiveTab("all")}
+            className={`px-4 md:px-6 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-md ${
+              activeTab === "all"
+                ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg"
+                : "bg-white text-gray-700 hover:shadow-lg"
+            }`}
+          >
+            <span className="hidden sm:inline">All Events </span>({stats.total})
+          </button>
+          <button
+            onClick={() => setActiveTab("admins")}
+            className={`px-4 md:px-6 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-md ${
+              activeTab === "admins"
+                ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg"
+                : "bg-white text-gray-700 hover:shadow-lg"
+            }`}
+          >
+            <span className="hidden sm:inline">Admins </span>({pendingAdmins.length})
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("permissions");
+              fetchUsers();
+            }}
+            className={`px-4 md:px-6 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-md ${
+              activeTab === "permissions"
+                ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg"
+                : "bg-white text-gray-700 hover:shadow-lg"
+            }`}
+          >
+            Permissions
+          </button>
+        </div>
+
+        {/* Pending Events */}
+        {activeTab === "pending" && (
+          <div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center text-xl shadow-md">
+                ⏳
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                Events Awaiting Approval
+              </h2>
+            </div>
+            {pendingEvents.length === 0 ? (
+              <div className="bg-white p-12 rounded-2xl shadow-md text-center">
+                <div className="text-5xl mb-4">✓</div>
+                <p className="text-gray-500 text-lg">No pending events to review</p>
+              </div>
+            ) : (
+              <div className="space-y-4 md:space-y-6">
+                {pendingEvents.map((event) => (
+                  <div
+                    key={event._id}
+                    className="p-6 bg-white shadow-md rounded-2xl hover:shadow-xl transition-all"
+                  >
+                    <div className="flex flex-col lg:flex-row justify-between items-start gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-3">
+                          <span className="px-4 py-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-semibold rounded-full">
+                            {event.category}
+                          </span>
                         </div>
-                        <div>
-                          <span className="font-semibold">📂 Category:</span>{" "}
-                          {event.category}
-                        </div>
-                        <div>
-                          <span className="font-semibold">👥 Organizer:</span>{" "}
-                          {event.organizer}
+                        <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+                          {event.title}
+                        </h3>
+                        <p className="text-gray-600 mb-4">{event.description}</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <span className="text-lg">📅</span>
+                            <span className="font-medium">
+                              {new Date(event.date).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <span className="text-lg">📂</span>
+                            <span className="font-medium">{event.category}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <span className="text-lg">👥</span>
+                            <span className="font-medium">{event.organizer}</span>
+                          </div>
                         </div>
                       </div>
+                      <div className="flex lg:flex-col gap-3 w-full lg:w-auto">
+                        <button
+                          onClick={() => handleApprove(event._id)}
+                          className="flex-1 lg:flex-none px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl font-semibold transition-all transform hover:scale-105 shadow-md"
+                        >
+                          ✓ Approve
+                        </button>
+                        <button
+                          onClick={() => handleReject(event._id)}
+                          className="flex-1 lg:flex-none px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white rounded-xl font-semibold transition-all transform hover:scale-105 shadow-md"
+                        >
+                          ✗ Reject
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-2 ml-6">
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* All Events */}
+        {activeTab === "all" && (
+          <div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center text-xl shadow-md">
+                📋
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                All Events
+              </h2>
+            </div>
+            {allEvents.length === 0 ? (
+              <div className="bg-white p-12 rounded-2xl shadow-md text-center">
+                <div className="text-5xl mb-4">📋</div>
+                <p className="text-gray-500 text-lg">No events found</p>
+              </div>
+            ) : (
+              <div className="space-y-4 md:space-y-6">
+                {allEvents.map((event) => (
+                  <div
+                    key={event._id}
+                    className="p-6 bg-white shadow-md rounded-2xl hover:shadow-xl transition-all"
+                  >
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                          <h3 className="text-lg md:text-xl font-bold text-gray-900">
+                            {event.title}
+                          </h3>
+                          <span
+                            className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                              event.status === "APPROVED"
+                                ? "bg-green-100 text-green-700"
+                                : event.status === "PENDING"
+                                ? "bg-yellow-100 text-yellow-700"
+                                : "bg-red-100 text-red-700"
+                            }`}
+                          >
+                            {event.status}
+                          </span>
+                        </div>
+                        <p className="text-gray-600 mb-3 text-sm md:text-base">
+                          {event.description}
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
+                          <div className="flex items-center gap-2">
+                            <span>📅</span>
+                            <span>{new Date(event.date).toLocaleDateString()}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span>📂</span>
+                            <span>{event.category}</span>
+                          </div>
+                          <div className="flex items-center gap-2 sm:col-span-2">
+                            <span>👥</span>
+                            <span>{event.organizer}</span>
+                          </div>
+                        </div>
+                      </div>
                       <button
-                        onClick={() => handleApprove(event._id)}
-                        className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded font-semibold transition-colors"
+                        onClick={() => handleDeleteAny(event._id)}
+                        className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white rounded-xl font-semibold transition-all transform hover:scale-105 shadow-md"
                       >
-                        ✓ Approve
-                      </button>
-                      <button
-                        onClick={() => handleReject(event._id)}
-                        className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded font-semibold transition-colors"
-                      >
-                        ✗ Reject
+                        Delete
                       </button>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-      {activeTab === "permissions" && (
-  <div>
-    <h2 className="text-2xl font-bold mb-4">🔐 User Permissions</h2>
-
-    <div className="space-y-4">
-      {users.map((user) => (
-        <div
-          key={user._id}
-          className="p-6 bg-white shadow rounded-lg flex justify-between items-center"
-        >
-          <div>
-            <p className="font-semibold text-lg">{user.name}</p>
-            <p className="text-gray-600">{user.email}</p>
-            <span className="text-sm text-gray-500">
-              Role: {user.role}
-            </span>
+                ))}
+              </div>
+            )}
           </div>
+        )}
 
-          {user.role !== "SUPER_ADMIN" && (
-            <button
-              onClick={() => toggleRole(user._id)}
-              className={`px-6 py-3 rounded font-semibold text-white ${
-                user.role === "ADMIN"
-                  ? "bg-red-500 hover:bg-red-600"
-                  : "bg-green-500 hover:bg-green-600"
-              }`}
-            >
-              {user.role === "ADMIN"
-                ? "Demote to User"
-                : "Promote to Admin"}
-            </button>
-          )}
-        </div>
-      ))}
-    </div>
-  </div>
-)}
-
-
-      {/* All Events */}
-      {activeTab === "all" && (
-        <div>
-          <h2 className="text-2xl font-bold mb-4">📋 All Events</h2>
-          {allEvents.length === 0 ? (
-            <div className="bg-white p-8 rounded-lg shadow text-center">
-              <p className="text-gray-500">No events found</p>
+        {/* Pending Admins */}
+        {activeTab === "admins" && (
+          <div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-xl shadow-md">
+                👨‍💼
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                Pending Admin Approvals
+              </h2>
             </div>
-          ) : (
-            <div className="space-y-4">
-              {allEvents.map((event) => (
-                <div
-                  key={event._id}
-                  className="p-6 bg-white shadow rounded-lg hover:shadow-lg transition-shadow"
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-xl font-bold">{event.title}</h3>
-                        <span
-                          className={`px-3 py-1 text-xs rounded-full ${
-                            event.status === "APPROVED"
-                              ? "bg-green-100 text-green-800"
-                              : event.status === "PENDING"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {event.status}
-                        </span>
-                      </div>
-                      <p className="text-gray-700 mb-3">{event.description}</p>
-                      <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
-                        <div>📅 {new Date(event.date).toLocaleDateString()}</div>
-                        <div>📂 {event.category}</div>
-                        <div className="col-span-2">👥 {event.organizer}</div>
-                      </div>
+
+            {pendingAdmins.length === 0 ? (
+              <div className="bg-white p-12 rounded-2xl shadow-md text-center">
+                <div className="text-5xl mb-4">✓</div>
+                <p className="text-gray-500 text-lg">No pending admins</p>
+              </div>
+            ) : (
+              <div className="space-y-4 md:space-y-6">
+                {pendingAdmins.map((admin) => (
+                  <div
+                    key={admin._id}
+                    className="p-6 bg-white shadow-md rounded-2xl hover:shadow-xl transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                  >
+                    <div>
+                      <p className="text-lg md:text-xl font-bold text-gray-900">
+                        {admin.name}
+                      </p>
+                      <p className="text-gray-600">{admin.email}</p>
                     </div>
+
                     <button
-                      onClick={() => handleDeleteAny(event._id)}
-                      className="ml-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded transition-colors"
+                      onClick={() => handleApproveAdmin(admin._id)}
+                      className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl font-semibold transition-all transform hover:scale-105 shadow-md"
                     >
-                      Delete
+                      ✓ Approve Admin
                     </button>
                   </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* User Permissions */}
+        {activeTab === "permissions" && (
+          <div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-xl shadow-md">
+                🔐
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                User Permissions
+              </h2>
+            </div>
+
+            <div className="space-y-4 md:space-y-6">
+              {users.map((user) => (
+                <div
+                  key={user._id}
+                  className="p-6 bg-white shadow-md rounded-2xl hover:shadow-xl transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                >
+                  <div>
+                    <p className="text-lg md:text-xl font-bold text-gray-900">
+                      {user.name}
+                    </p>
+                    <p className="text-gray-600 mb-1">{user.email}</p>
+                    <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-700">
+                      Role: {user.role}
+                    </span>
+                  </div>
+
+                  {user.role !== "SUPER_ADMIN" && (
+                    <button
+                      onClick={() => toggleRole(user._id)}
+                      className={`w-full sm:w-auto px-6 py-3 rounded-xl font-semibold text-white transition-all transform hover:scale-105 shadow-md ${
+                        user.role === "ADMIN"
+                          ? "bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600"
+                          : "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+                      }`}
+                    >
+                      {user.role === "ADMIN"
+                        ? "Demote to User"
+                        : "Promote to Admin"}
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
-          )}
-        </div>
-      )}
-      {/* Pending Admins */}
-{activeTab === "admins" && (
-  <div>
-    <h2 className="text-2xl font-bold mb-4">👨‍💼 Pending Admin Approvals</h2>
-
-    {pendingAdmins.length === 0 ? (
-      <div className="bg-white p-8 rounded-lg shadow text-center">
-        <p className="text-gray-500">No pending admins</p>
-      </div>
-    ) : (
-      <div className="space-y-4">
-        {pendingAdmins.map((admin) => (
-          <div
-            key={admin._id}
-            className="p-6 bg-white shadow rounded-lg flex justify-between items-center"
-          >
-            <div>
-              <p className="text-lg font-semibold">{admin.name}</p>
-              <p className="text-gray-600">{admin.email}</p>
-            </div>
-
-            <button
-              onClick={() => handleApproveAdmin(admin._id)}
-              className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded font-semibold transition-colors"
-            >
-              ✓ Approve Admin
-            </button>
           </div>
-        ))}
+        )}
       </div>
-    )}
-  </div>
-)}
 
+      <style jsx>{`
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+      `}</style>
     </div>
   );
 }
