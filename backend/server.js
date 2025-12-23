@@ -44,3 +44,8 @@ app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
   console.log(`✅ Frontend should be on http://localhost:3000`);
 });
+
+const configRoutes = require("./routes/configRoutes");
+
+// Add this with your other routes
+app.use("/api/config", configRoutes);
