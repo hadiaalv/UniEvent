@@ -1,139 +1,40 @@
-// const express = require("express");
-// const Event = require("../models/Event");
-// const auth = require("../middleware/authMiddleware");
-// const role = require("../middleware/roleMiddleware");
+const express = require("express");
+const Event = require("../models/Event");
+const auth = require("../middleware/authMiddleware");
+const role = require("../middleware/roleMiddleware");
 
-// const router = express.Router();
-
-// /**
-//  * 🔓 PUBLIC – approved events only
-//  */
-// router.get("/public", async (req, res) => {
-//   const events = await Event.find({ status: "APPROVED" }).sort({ date: 1 });
-//   res.json(events);
-// });
-// /**
-//  * 👑 SUPER ADMIN – pending events only
-//  */
-// router.get("/pending", auth, role("SUPER_ADMIN"), async (req, res) => {
-//   const events = await Event.find({ status: "PENDING" }).sort({ createdAt: -1 });
-//   res.json(events);
-// });
-// /**
-//  * 👑 SUPER ADMIN – all events (approval panel)
-//  */
-// router.get("/all", auth, role("SUPER_ADMIN"), async (req, res) => {
-//   const events = await Event.find().sort({ createdAt: -1 });
-//   res.json(events);
-// });
-
-// /**
-//  * 👨‍💼 ADMIN – get my events
-//  */
-// router.get("/my", auth, role("ADMIN", "SUPER_ADMIN"), async (req, res) => {
-//   const events = await Event.find({ createdBy: req.user.id });
-//   res.json(events);
-// });
-
-// /**
-//  * 👨‍💼 ADMIN – create event
-//  */
-// router.post("/", auth, role("ADMIN", "SUPER_ADMIN"), async (req, res) => {
-//   await Event.create({
-//     ...req.body,
-//     createdBy: req.user.id,
-//     status: "PENDING",
-//   });
-
-//   res.json({ message: "Event submitted for approval" });
-// });
-
-// /**
-//  * 👨‍💼 ADMIN – update event (only if pending)
-//  */
-// router.put("/:id", auth, role("ADMIN", "SUPER_ADMIN"), async (req, res) => {
-//   const event = await Event.findById(req.params.id);
-
-//   if (!event)
-//     return res.status(404).json({ msg: "Event not found" });
-
-//   if (event.createdBy.toString() !== req.user.id)
-//     return res.status(403).json({ msg: "Not your event" });
-
-//   if (event.status !== "PENDING")
-//     return res.status(400).json({ msg: "Approved events cannot be edited" });
-
-//   Object.assign(event, req.body);
-//   await event.save();
-
-//   res.json({ message: "Event updated" });
-// });
-
-// /**
-//  * 👨‍💼 ADMIN – delete event
-//  */
-// router.delete("/:id", auth, role("ADMIN", "SUPER_ADMIN"), async (req, res) => {
-//   const event = await Event.findById(req.params.id);
-
-//   if (!event)
-//     return res.status(404).json({ msg: "Event not found" });
-
-//   if (event.createdBy.toString() !== req.user.id)
-//     return res.status(403).json({ msg: "Not your event" });
-
-//   await event.deleteOne();
-//   res.json({ message: "Event deleted" });
-// });
-
-// /**
-//  * 👑 SUPER ADMIN – approve event
-//  */
-// router.put("/:id/approve", auth, role("SUPER_ADMIN"), async (req, res) => {
-//   await Event.findByIdAndUpdate(req.params.id, { status: "APPROVED" });
-//   res.json({ message: "Event approved" });
-// });
-
-// /**
-//  * 👑 SUPER ADMIN – reject event
-//  */
-// router.put("/:id/reject", auth, role("SUPER_ADMIN"), async (req, res) => {
-//   await Event.findByIdAndUpdate(req.params.id, { status: "REJECTED" });
-//   res.json({ message: "Event rejected" });
-// });
-
-// module.exports = router;
-
-
-const express = require('express');
 const router = express.Router();
-const Event = require('../models/Event');
-const User = require('../models/User');
-const Notification = require('../models/Notification');
 
-// Admin uploads an event
-router.post('/upload', async (req, res) => {
-    try {
-        const { title, description } = req.body;
-        const event = await Event.create({ title, description });
-
-        // Notify all normal users
-        const users = await User.find({ isAdmin: false });
-        for (let user of users) {
-            await Notification.create({
-                user: user._id,
-                message: `New Event Uploaded: ${event.title}`
-            });
-        }
-
-        res.json({ success: true, message: "Event uploaded & notifications sent." });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
+/**
+ * 🔓 PUBLIC – approved events only
+ */
+router.get("/public", async (req, res) => {
+  const events = await Event.find({ status: "APPROVED" }).sort({ date: 1 });
+  res.json(events);
+});
+/**
+ * 👑 SUPER ADMIN – pending events only
+ */
+router.get("/pending", auth, role("SUPER_ADMIN"), async (req, res) => {
+  const events = await Event.find({ status: "PENDING" }).sort({ createdAt: -1 });
+  res.json(events);
+});
+/**
+ * 👑 SUPER ADMIN – all events (approval panel)
+ */
+router.get("/all", auth, role("SUPER_ADMIN"), async (req, res) => {
+  const events = await Event.find().sort({ createdAt: -1 });
+  res.json(events);
 });
 
-module.exports = router;
+/**
+ * 👨‍💼 ADMIN – get my events
+ */
+router.get("/my", auth, role("ADMIN", "SUPER_ADMIN"), async (req, res) => {
+  const events = await Event.find({ createdBy: req.user.id });
+  res.json(events);
+});
 
-<<<<<<< Updated upstream
 /**
  * 👨‍💼 ADMIN – create event
  */
@@ -232,5 +133,3 @@ router.put("/:id/images", auth, role("ADMIN", "SUPER_ADMIN"), async (req, res) =
 });
 
 module.exports = router;
-=======
->>>>>>> Stashed changes
