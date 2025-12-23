@@ -1,50 +1,58 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../../lib/api";
-import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const router = useRouter();
+export default function UserDashboard() {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleLogin = async () => {
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
     try {
-      const res = await api.post("/auth/login", { email, password });
-      localStorage.setItem("token", res.data.token);
-
-      // redirect based on role
-      if (res.data.role === "USER") router.push("/user");
-      else if (res.data.role === "ADMIN") router.push("/admin");
-      else router.push("/superadmin");
+      const res = await api.get("/events");
+      setEvents(res.data);
     } catch (err) {
-      alert("Login failed");
+      console.error("Error fetching events:", err);
+      alert("Failed to fetch events");
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-xl">Loading events...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-md mx-auto mt-20 p-8 bg-white shadow rounded">
-      <h2 className="text-2xl font-bold mb-4">Login</h2>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-full mb-2 p-2 border rounded"
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full mb-4 p-2 border rounded"
-      />
-      <button
-        onClick={handleLogin}
-        className="w-full bg-blue-600 text-white p-2 rounded"
-      >
-        Login
-      </button>
+    <div className="max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Approved Events</h1>
+      
+      {events.length === 0 ? (
+        <div className="bg-white p-8 rounded-lg shadow text-center">
+          <p className="text-gray-600">No approved events available at the moment.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {events.map((event) => (
+            <div key={event._id} className="p-6 bg-white shadow rounded-lg hover:shadow-lg transition-shadow">
+              <h2 className="text-xl font-bold text-blue-600 mb-2">{event.title}</h2>
+              <p className="text-gray-700 mb-3">{event.description}</p>
+              <div className="flex justify-between items-center text-sm text-gray-600">
+                <span><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</span>
+                <span><strong>Category:</strong> {event.category}</span>
+                <span><strong>Organizer:</strong> {event.organizer}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
