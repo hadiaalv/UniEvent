@@ -28,7 +28,7 @@ export default function UserDashboard() {
 
   const fetchEvents = async () => {
     try {
-      const res = await api.get("/events");
+      const res = await api.get("/events/public");
       setEvents(res.data);
     } catch (err) {
       setNotification({ message: "Failed to fetch events", type: "error" });
