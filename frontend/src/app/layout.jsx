@@ -9,7 +9,7 @@ export default function RootLayout({ children }) {
       <body>
         <AuthProvider>
           <Header />
-          <main className="container mx-auto p-4">{children}</main>
+          <main >{children}</main>
         </AuthProvider>
       </body>
     </html>
