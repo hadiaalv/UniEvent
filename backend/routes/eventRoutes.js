@@ -61,7 +61,8 @@ router.put("/:id", auth, role("ADMIN", "SUPER_ADMIN"), async (req, res) => {
   if (!event)
     return res.status(404).json({ msg: "Event not found" });
 
-  if (event.createdBy.toString() !== req.user.id)
+  // Admins can only edit their own events, but super admins can edit any pending event
+  if (req.user.role !== "SUPER_ADMIN" && event.createdBy.toString() !== req.user.id)
     return res.status(403).json({ msg: "Not your event" });
 
   if (event.status !== "PENDING")
@@ -82,7 +83,8 @@ router.delete("/:id", auth, role("ADMIN", "SUPER_ADMIN"), async (req, res) => {
   if (!event)
     return res.status(404).json({ msg: "Event not found" });
 
-  if (event.createdBy.toString() !== req.user.id)
+  // Admins can only delete their own events, but super admins can delete any event
+  if (req.user.role !== "SUPER_ADMIN" && event.createdBy.toString() !== req.user.id)
     return res.status(403).json({ msg: "Not your event" });
 
   await event.deleteOne();
