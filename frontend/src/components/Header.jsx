@@ -1,7 +1,9 @@
 "use client";
+
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
+import NotificationBell from "./NotificationBell"; // ✅ import the bell
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -25,35 +27,40 @@ export default function Header() {
               <>
                 {/* Role Badge */}
                 <span className="px-4 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-semibold rounded-full shadow-md">
-                  {user.role === "SUPER_ADMIN" ? "Super Admin" : user.role.charAt(0) + user.role.slice(1).toLowerCase()}
+                  {user.role === "SUPER_ADMIN"
+                    ? "Super Admin"
+                    : user.role.charAt(0) + user.role.slice(1).toLowerCase()}
                 </span>
-                
+
+                {/* Notification Bell */}
+                <NotificationBell userId={user._id} role={user.role} />
+
                 {/* Dashboard Button */}
                 {user.role === "USER" && (
-                  <Link 
-                    href="/user" 
+                  <Link
+                    href="/user"
                     className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-5 py-2 rounded-full font-semibold shadow-md hover:shadow-lg transform hover:scale-105 transition-all"
                   >
                     Dashboard
                   </Link>
                 )}
                 {user.role === "ADMIN" && (
-                  <Link 
-                    href="/admin" 
+                  <Link
+                    href="/admin"
                     className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-5 py-2 rounded-full font-semibold shadow-md hover:shadow-lg transform hover:scale-105 transition-all"
                   >
                     Dashboard
                   </Link>
                 )}
                 {user.role === "SUPER_ADMIN" && (
-                  <Link 
-                    href="/superadmin" 
+                  <Link
+                    href="/superadmin"
                     className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-5 py-2 rounded-full font-semibold shadow-md hover:shadow-lg transform hover:scale-105 transition-all"
                   >
                     Admin Panel
                   </Link>
                 )}
-                
+
                 {/* Logout Button */}
                 <button
                   onClick={logout}
@@ -64,15 +71,12 @@ export default function Header() {
               </>
             ) : (
               <>
-                {/* Login Link */}
-                <Link 
-                  href="/login" 
+                <Link
+                  href="/login"
                   className="text-gray-700 hover:text-indigo-600 font-medium transition-colors"
                 >
                   Login
                 </Link>
-                
-                {/* Register Button */}
                 <Link
                   href="/register"
                   className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-2 rounded-full font-semibold shadow-md hover:shadow-lg transform hover:scale-105 transition-all"
@@ -111,15 +115,19 @@ export default function Header() {
           <div className="md:hidden py-4 border-t border-gray-200">
             {user ? (
               <div className="flex flex-col gap-3">
-                {/* Role Badge */}
                 <div className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-semibold rounded-full text-center shadow-md">
-                  {user.role === "SUPER_ADMIN" ? "Super Admin" : user.role.charAt(0) + user.role.slice(1).toLowerCase()}
+                  {user.role === "SUPER_ADMIN"
+                    ? "Super Admin"
+                    : user.role.charAt(0) + user.role.slice(1).toLowerCase()}
                 </div>
-                
-                {/* Dashboard Buttons */}
+
+                {/* Mobile Notification Bell */}
+                <NotificationBell userId={user._id} role={user.role} />
+
+                {/* Dashboard & Logout buttons */}
                 {user.role === "USER" && (
-                  <Link 
-                    href="/user" 
+                  <Link
+                    href="/user"
                     onClick={() => setMobileMenuOpen(false)}
                     className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-5 py-3 rounded-full font-semibold shadow-md transition-all text-center"
                   >
@@ -127,8 +135,8 @@ export default function Header() {
                   </Link>
                 )}
                 {user.role === "ADMIN" && (
-                  <Link 
-                    href="/admin" 
+                  <Link
+                    href="/admin"
                     onClick={() => setMobileMenuOpen(false)}
                     className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-5 py-3 rounded-full font-semibold shadow-md transition-all text-center"
                   >
@@ -136,16 +144,14 @@ export default function Header() {
                   </Link>
                 )}
                 {user.role === "SUPER_ADMIN" && (
-                  <Link 
-                    href="/superadmin" 
+                  <Link
+                    href="/superadmin"
                     onClick={() => setMobileMenuOpen(false)}
                     className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-5 py-3 rounded-full font-semibold shadow-md transition-all text-center"
                   >
                     Admin Panel
                   </Link>
                 )}
-                
-                {/* Logout Button */}
                 <button
                   onClick={() => {
                     logout();
@@ -158,16 +164,13 @@ export default function Header() {
               </div>
             ) : (
               <div className="flex flex-col gap-3">
-                {/* Login Link */}
-                <Link 
-                  href="/login" 
+                <Link
+                  href="/login"
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-gray-700 hover:text-indigo-600 font-medium transition-colors px-4 py-2 hover:bg-gray-50 rounded-lg"
                 >
                   Login
                 </Link>
-                
-                {/* Register Button */}
                 <Link
                   href="/register"
                   onClick={() => setMobileMenuOpen(false)}
