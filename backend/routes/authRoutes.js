@@ -36,6 +36,7 @@ router.post("/register", async (req, res) => {
     }
     
     // Create user
+// Create user
 const user = await User.create({ 
   name, 
   email, 
@@ -48,7 +49,9 @@ console.log("✅ User registered:", user.email, "Role:", user.role, "Approved:",
 
 // 🔔 If admin registration, notify all super admins
 if (userRole === "ADMIN" && !isApproved) {
+  console.log("🔍 DEBUG: Admin registered, finding super admins...");
   const superAdmins = await User.find({ role: "SUPER_ADMIN" });
+  console.log("🔍 DEBUG: Found super admins:", superAdmins.length, superAdmins.map(a => a.email));
   
   if (superAdmins.length > 0) {
     const notifications = superAdmins.map(admin => ({
@@ -56,8 +59,16 @@ if (userRole === "ADMIN" && !isApproved) {
       message: `👤 New admin registration awaiting approval: ${user.name} (${user.email})`,
     }));
     
-    await Notification.insertMany(notifications);
+    console.log("🔍 DEBUG: About to insert notifications:", JSON.stringify(notifications, null, 2));
+    const created = await Notification.insertMany(notifications);
+    console.log("🔍 DEBUG: Notifications created successfully:", created.length);
     console.log(`📢 Sent ${notifications.length} notification(s) to super admin(s)`);
+    
+    // Verify in database
+    const verify = await Notification.find({ user: { $in: superAdmins.map(a => a._id) } }).sort({ createdAt: -1 }).limit(5);
+    console.log("🔍 DEBUG: Verified notifications in DB:", verify.length);
+  } else {
+    console.log("⚠️ WARNING: No super admins found!");
   }
 }
     res.json({ 
