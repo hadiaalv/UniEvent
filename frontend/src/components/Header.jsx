@@ -15,7 +15,12 @@ export default function Header() {
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <span className="text-3xl transition-transform group-hover:scale-110">🎓</span>
+            <img
+  src="/logo.jpg"
+  alt="Logo"
+  className="w-10 h-10 transition-transform group-hover:scale-110"
+/>
+
             <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               UniVibe
             </h1>
