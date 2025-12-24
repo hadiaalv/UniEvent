@@ -36,16 +36,30 @@ router.post("/register", async (req, res) => {
     }
     
     // Create user
-    const user = await User.create({ 
-      name, 
-      email, 
-      password: hashed, 
-      role: userRole,
-      isApproved: isApproved
-    });
+const user = await User.create({ 
+  name, 
+  email, 
+  password: hashed, 
+  role: userRole,
+  isApproved: isApproved
+});
+
+console.log("✅ User registered:", user.email, "Role:", user.role, "Approved:", user.isApproved);
+
+// 🔔 If admin registration, notify all super admins
+if (userRole === "ADMIN" && !isApproved) {
+  const superAdmins = await User.find({ role: "SUPER_ADMIN" });
+  
+  if (superAdmins.length > 0) {
+    const notifications = superAdmins.map(admin => ({
+      user: admin._id,
+      message: `👤 New admin registration awaiting approval: ${user.name} (${user.email})`,
+    }));
     
-    console.log("✅ User registered:", user.email, "Role:", user.role, "Approved:", user.isApproved);
-    
+    await Notification.insertMany(notifications);
+    console.log(`📢 Sent ${notifications.length} notification(s) to super admin(s)`);
+  }
+}
     res.json({ 
       msg: message,
       user: {

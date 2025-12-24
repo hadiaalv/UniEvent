@@ -31,11 +31,30 @@ router.put(
   auth,
   role("SUPER_ADMIN"),
   async (req, res) => {
-    await User.findByIdAndUpdate(req.params.id, {
-      isApproved: true,
-    });
+    try {
+      const user = await User.findByIdAndUpdate(
+        req.params.id, 
+        { isApproved: true },
+        { new: true }
+      );
 
-    res.json({ message: "Admin approved successfully" });
+      if (!user) {
+        return res.status(404).json({ msg: "User not found" });
+      }
+
+      // Notify the approved admin
+      await Notification.create({
+        user: user._id,
+        message: `✅ Your admin request has been approved! You can now log in as an admin.`,
+      });
+
+      console.log(`✅ Admin approved: ${user.name} - Notification sent`);
+
+      res.json({ message: "Admin approved successfully" });
+    } catch (err) {
+      console.error("Error approving admin:", err);
+      res.status(500).json({ msg: "Failed to approve admin" });
+    }
   }
 );
 /**
@@ -85,27 +104,5 @@ router.put(
     });
   }
 );
-
-// Superadmin approves admin
-router.post('/approve/:id', async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-        if (!user) return res.status(404).json({ success: false, message: "User not found" });
-
-        user.isAdmin = true;
-        user.isApproved = true;
-        await user.save();
-
-        // Notify the user
-        await Notification.create({
-            user: user._id,
-            message: "Your admin request has been approved!"
-        });
-
-        res.json({ success: true, message: `${user.username} is now admin` });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
 
 module.exports = router;
